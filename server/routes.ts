@@ -26,10 +26,10 @@ async function generateOptionsWithAI(prompt: string): Promise<string[]> {
         model: "mixtral-8x7b-32768",
         messages: [{
           role: "system",
-          content: "You are a helpful assistant that generates wheel options based on user prompts. Generate a list of relevant options."
+          content: "You are a helpful assistant that generates wheel options based on user prompts. Generate a list of 6-8 relevant options. Each option should be short (1-3 words maximum) to fit nicely in a wheel segment. Keep each option concise and clear."
         }, {
           role: "user",
-          content: `Generate wheel options for: ${prompt}`
+          content: `Generate wheel options for: ${prompt}. Remember to keep each option short and concise.`
         }],
         max_tokens: 150,
         temperature: 0.7
@@ -41,11 +41,10 @@ async function generateOptionsWithAI(prompt: string): Promise<string[]> {
     }
 
     const data = await response.json();
-    // Parse the response to extract options
     const content = data.choices[0].message.content;
     const options = content.split('\n')
       .map((line: string) => line.trim())
-      .filter((line: string) => line.length > 0)
+      .filter((line: string) => line.length > 0 && line.length < 30) // Filter out long options
       .map((line: string) => line.replace(/^\d+\.\s*/, '')); // Remove numbering
 
     return options;

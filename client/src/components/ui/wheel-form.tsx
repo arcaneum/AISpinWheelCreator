@@ -40,13 +40,19 @@ export function WheelForm({ onSubmit }: WheelFormProps) {
   });
 
   const handleSubmit = form.handleSubmit((values) => {
-    const segments = Array.isArray(values.segments) 
-      ? values.segments 
-      : values.segments.split(",").map(s => s.trim());
-    onSubmit({ 
-      ...values, 
-      segments, 
-      colors: Array(segments.length).fill("") 
+    const segments = Array.isArray(values.segments)
+      ? values.segments
+      : values.segments.split(",").map((s) => s.trim());
+
+    // Generate vibrant colors for segments
+    const colors = segments.map((_, i) =>
+      `hsl(${(360 / segments.length) * i}, 85%, 55%)`
+    );
+
+    onSubmit({
+      ...values,
+      segments,
+      colors,
     });
   });
 
@@ -98,38 +104,40 @@ export function WheelForm({ onSubmit }: WheelFormProps) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="segments"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Segments (comma-separated)</FormLabel>
-              <div className="flex gap-2">
+        <div className="space-y-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full gap-2"
+            onClick={handleAIGenerate}
+            disabled={isGenerating}
+          >
+            {isGenerating ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Wand2 className="h-4 w-4" />
+            )}
+            Generate Options with AI
+          </Button>
+
+          <FormField
+            control={form.control}
+            name="segments"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Segments (comma-separated)</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Pizza, Burger, Sushi, Tacos"
+                    placeholder="Pizza, Burger, Sushi"
                     {...field}
                     value={Array.isArray(field.value) ? field.value.join(", ") : field.value}
                   />
                 </FormControl>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={handleAIGenerate}
-                  disabled={isGenerating}
-                >
-                  {isGenerating ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Wand2 className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <Button type="submit" className="w-full">Create Wheel</Button>
       </form>
