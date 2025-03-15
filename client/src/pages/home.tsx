@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const [selectedWheel, setSelectedWheel] = useState<SpinWheelType | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const { data: wheels = [] } = useQuery<SpinWheelType[]>({
@@ -24,8 +25,10 @@ export default function Home() {
       const res = await apiRequest("POST", "/api/wheels", wheelData);
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (newWheel) => {
       queryClient.invalidateQueries({ queryKey: ["/api/wheels"] });
+      setSelectedWheel(newWheel);
+      setDialogOpen(false);
       toast({
         title: "Success",
         description: "Wheel created successfully!",
@@ -62,7 +65,7 @@ export default function Home() {
             </p>
           </div>
 
-          <Dialog>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button size="lg" className="gap-2">
                 <Plus className="h-5 w-5" />
