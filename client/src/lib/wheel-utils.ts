@@ -1,7 +1,7 @@
 export function generateColors(count: number): string[] {
   const hueStep = 360 / count;
   return Array.from({ length: count }, (_, i) => 
-    `hsl(${i * hueStep}, 70%, 50%)`
+    `hsl(${i * hueStep}, 85%, 55%)`  // Increased saturation and brightness
   );
 }
 
@@ -15,7 +15,7 @@ export function drawWheel(
   const height = ctx.canvas.height;
   const centerX = width / 2;
   const centerY = height / 2;
-  const radius = Math.min(width, height) / 2 - 20; // Reduced radius to accommodate pointer
+  const radius = Math.min(width, height) / 2 - 40; // More padding for pointer
 
   ctx.clearRect(0, 0, width, height);
   ctx.save();
@@ -24,7 +24,9 @@ export function drawWheel(
 
   const angleStep = (2 * Math.PI) / segments.length;
 
-  // Draw segments
+  // Draw segments with shadow
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
   segments.forEach((segment, i) => {
     ctx.beginPath();
     ctx.moveTo(0, 0);
@@ -33,64 +35,63 @@ export function drawWheel(
 
     ctx.fillStyle = colors[i];
     ctx.fill();
+    ctx.shadowBlur = 0;
     ctx.strokeStyle = 'white';
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Draw text
+    // Draw text radially
     ctx.save();
     const textAngle = i * angleStep + angleStep / 2;
     ctx.rotate(textAngle);
-    ctx.translate(radius * 0.6, 0); // Position text at 60% of radius
-    ctx.rotate(Math.PI / 2);
     ctx.fillStyle = 'white';
     ctx.font = 'bold 16px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Wrap text if too long
-    const maxWidth = radius * 0.4;
-    const words = segment.split(' ');
-    let line = '';
-    let y = 0;
+    // Add text shadow for better readability
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = 4;
 
+    // Split text into words and draw along the radius
+    const words = segment.split(' ');
+    const lineHeight = 20;
     words.forEach((word, index) => {
-      const testLine = line + word + ' ';
-      const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxWidth && index > 0) {
-        ctx.fillText(line, 0, y);
-        line = word + ' ';
-        y += 20;
-      } else {
-        line = testLine;
-      }
+      const distanceFromCenter = radius * 0.3 + (index * lineHeight);
+      ctx.fillText(word, distanceFromCenter, 0);
     });
-    ctx.fillText(line, 0, y);
 
     ctx.restore();
   });
 
-  // Draw center circle
+  // Draw center circle with gradient
+  const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 20);
+  gradient.addColorStop(0, '#ffffff');
+  gradient.addColorStop(1, '#e0e0e0');
+
   ctx.beginPath();
-  ctx.arc(0, 0, 10, 0, Math.PI * 2);
-  ctx.fillStyle = '#fff';
+  ctx.arc(0, 0, 20, 0, Math.PI * 2);
+  ctx.fillStyle = gradient;
   ctx.fill();
-  ctx.strokeStyle = '#000';
+  ctx.strokeStyle = '#ccc';
   ctx.lineWidth = 2;
   ctx.stroke();
 
   ctx.restore();
 
-  // Draw pointer
+  // Draw pointer on the right side
   ctx.save();
-  ctx.translate(centerX, centerY - radius);
+  ctx.translate(centerX + radius, centerY);
   ctx.fillStyle = '#333';
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(-15, -10);
-  ctx.lineTo(15, -10);
-  ctx.lineTo(0, 15);
+  ctx.moveTo(10, -15);
+  ctx.lineTo(-15, 0);
+  ctx.lineTo(10, 15);
   ctx.closePath();
   ctx.fill();
+  ctx.stroke();
   ctx.restore();
 }
 
@@ -100,7 +101,8 @@ export function getWinningSegment(
 ): string {
   const segmentAngle = (2 * Math.PI) / segments.length;
   const normalizedRotation = (rotation % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-  const index = Math.floor(segments.length - (normalizedRotation / segmentAngle));
+  // Adjust index calculation for right-side pointer
+  const index = Math.floor(segments.length - ((normalizedRotation + Math.PI/2) / segmentAngle));
   return segments[index % segments.length];
 }
 
