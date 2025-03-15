@@ -25,10 +25,10 @@ async function generateOptionsWithAI(prompt: string): Promise<string[]> {
         model: "mixtral-8x7b-32768",
         messages: [{
           role: "system",
-          content: "You are a helpful assistant that generates wheel options based on user prompts. Generate a list of 6-8 relevant options. Each option should be short (1-3 words maximum) to fit nicely in a wheel segment. Keep each option concise and clear."
+          content: "You are a helpful assistant that generates wheel options based on user prompts. Generate a list of 6-8 relevant options. Each option should be short (1-3 words maximum) to fit nicely in a wheel segment. Keep each option concise and clear. Use abbreviated forms when possible (e.g., 'A#m' for 'A Sharp Minor', 'Dm' for 'D Minor'). Never generate options longer than 15 characters."
         }, {
           role: "user",
-          content: `Generate wheel options for: ${prompt}. These need to be specific to the user's request, for example if they ask for '5 popular Indian dishes', generate actual Indian dish names, or if they ask for 'music scales for ABRSM Grade 4', generate the actual scales used in that grade.`
+          content: `Generate wheel options for: ${prompt}. These need to be specific to the user's request, for example if they ask for '5 popular Indian dishes', generate actual Indian dish names (keeping them short like 'Dosa' instead of 'Masala Dosa'), or if they ask for 'music scales', use short notation like 'C#m' instead of 'C Sharp Minor'.`
         }],
         max_tokens: 150,
         temperature: 0.7
@@ -43,7 +43,7 @@ async function generateOptionsWithAI(prompt: string): Promise<string[]> {
     const content = data.choices[0].message.content;
     const options = content.split('\n')
       .map((line: string) => line.trim())
-      .filter((line: string) => line.length > 0 && line.length < 30) // Filter out long options
+      .filter((line: string) => line.length > 0 && line.length < 15) // Filter out long options
       .map((line: string) => line.replace(/^\d+\.\s*/, '')); // Remove numbering
 
     return options;
