@@ -28,7 +28,7 @@ async function generateOptionsWithAI(prompt: string): Promise<string[]> {
           content: "You are a helpful assistant that generates wheel options based on user prompts. Generate a list of 6-8 relevant options. Each option should be short (1-3 words maximum) to fit nicely in a wheel segment. Keep each option concise and clear."
         }, {
           role: "user",
-          content: `Generate wheel options for: ${prompt}. Remember to keep each option short and concise. These need to be specific to the user's request, for example if they ask for '5 popular Indian dishes', generate actual Indian dish names, or if they ask for 'music scales for ABRSM Grade 4', generate the actual scales used in that grade.`
+          content: `Generate wheel options for: ${prompt}. These need to be specific to the user's request, for example if they ask for '5 popular Indian dishes', generate actual Indian dish names, or if they ask for 'music scales for ABRSM Grade 4', generate the actual scales used in that grade.`
         }],
         max_tokens: 150,
         temperature: 0.7
@@ -39,7 +39,7 @@ async function generateOptionsWithAI(prompt: string): Promise<string[]> {
       throw new Error("Failed to generate options from Groq API");
     }
 
-    const data = await response.json();
+    const data = await response.json() as { choices: Array<{ message: { content: string } }> };
     const content = data.choices[0].message.content;
     const options = content.split('\n')
       .map((line: string) => line.trim())
