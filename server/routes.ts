@@ -5,7 +5,6 @@ import { insertWheelSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import fetch from "node-fetch";
 
-
 // Initialize Groq client with API key from environment
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
@@ -29,7 +28,7 @@ async function generateOptionsWithAI(prompt: string): Promise<string[]> {
           content: "You are a helpful assistant that generates wheel options based on user prompts. Generate a list of 6-8 relevant options. Each option should be short (1-3 words maximum) to fit nicely in a wheel segment. Keep each option concise and clear."
         }, {
           role: "user",
-          content: `Generate wheel options for: ${prompt}. Remember to keep each option short and concise.`
+          content: `Generate wheel options for: ${prompt}. Remember to keep each option short and concise. These need to be specific to the user's request, for example if they ask for '5 popular Indian dishes', generate actual Indian dish names, or if they ask for 'music scales for ABRSM Grade 4', generate the actual scales used in that grade.`
         }],
         max_tokens: 150,
         temperature: 0.7

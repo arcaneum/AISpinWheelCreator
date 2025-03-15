@@ -23,6 +23,7 @@ interface WheelFormProps {
 export function WheelForm({ onSubmit }: WheelFormProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
+  const [aiPrompt, setAiPrompt] = useState("");
 
   const form = useForm({
     resolver: zodResolver(
@@ -59,22 +60,21 @@ export function WheelForm({ onSubmit }: WheelFormProps) {
   const handleAIGenerate = async () => {
     try {
       setIsGenerating(true);
-      const prompt = form.getValues("name");
-      if (!prompt) {
+      if (!aiPrompt) {
         toast({
-          title: "Name required",
-          description: "Please enter a wheel name to generate options",
+          title: "Prompt required",
+          description: "Please enter what kind of options you want to generate",
           variant: "destructive",
         });
         return;
       }
 
-      const options = await generateWheelOptions(prompt);
+      const options = await generateWheelOptions(aiPrompt);
       form.setValue("segments", options.join(", "));
 
       toast({
         title: "Options generated!",
-        description: "AI has generated options based on your wheel name",
+        description: "AI has generated options based on your prompt",
       });
     } catch (error) {
       toast({
@@ -105,20 +105,40 @@ export function WheelForm({ onSubmit }: WheelFormProps) {
         />
 
         <div className="space-y-4">
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full gap-2"
-            onClick={handleAIGenerate}
-            disabled={isGenerating}
-          >
-            {isGenerating ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Wand2 className="h-4 w-4" />
-            )}
-            Generate Options with AI
-          </Button>
+          <div className="space-y-2">
+            <FormLabel>AI Option Generation</FormLabel>
+            <div className="flex gap-2">
+              <Input
+                placeholder="e.g., '5 popular Indian dishes' or 'ABRSM Grade 4 scales'"
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="shrink-0"
+                onClick={handleAIGenerate}
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Wand2 className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                or enter manually
+              </span>
+            </div>
+          </div>
 
           <FormField
             control={form.control}

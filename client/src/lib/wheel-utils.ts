@@ -53,18 +53,18 @@ export function drawWheel(
     const words = segment.split(' ');
     const totalLength = segment.length;
 
-    // Dynamic font size calculation
+    // Dynamic font size calculation based on segment size and text length
     let fontSize = Math.min(
       32, // Maximum font size
       Math.max(
         14, // Minimum font size
-        Math.floor(400 / Math.max(totalLength, 10)) // Scale based on text length
+        Math.floor(segmentHeight / (words.length * 1.5)) // Scale based on number of words with more spacing
       )
     );
 
-    // Further adjust based on number of words
-    if (words.length > 1) {
-      fontSize = Math.min(fontSize, Math.floor(segmentHeight / (words.length * 1.2)));
+    // Further adjust for total text length
+    if (totalLength > 10) {
+      fontSize = Math.min(fontSize, Math.floor(300 / totalLength));
     }
 
     ctx.font = `bold ${fontSize}px sans-serif`;
@@ -73,10 +73,10 @@ export function drawWheel(
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     ctx.shadowBlur = 4;
 
-    // Draw each word along the radius
-    const lineSpacing = fontSize * 1.2;
+    // Draw each word along the radius with increased spacing
+    const lineSpacing = fontSize * 1.5; // Increased line spacing
     words.forEach((word, index) => {
-      const distanceFromCenter = radius * 0.25 + (index * lineSpacing);
+      const distanceFromCenter = radius * 0.35 + (index * lineSpacing); // Moved text further from center
       ctx.fillText(word, distanceFromCenter, 0);
     });
 
