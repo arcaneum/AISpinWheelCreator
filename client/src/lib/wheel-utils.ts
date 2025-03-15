@@ -48,7 +48,7 @@ export function drawWheel(
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Calculate maximum text width based on segment size
+    // Calculate segment size for text fitting
     const segmentHeight = 2 * radius * Math.sin(angleStep / 2);
     const words = segment.split(' ');
     const totalLength = segment.length;
@@ -155,4 +155,27 @@ export async function playSpinSound() {
 
   oscillator.start();
   oscillator.stop(audioContext.currentTime + duration);
+}
+
+// Function to generate wheel options using AI
+export async function generateWheelOptions(prompt: string): Promise<string[]> {
+  try {
+    const response = await fetch('/api/generate-options', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to generate options');
+    }
+
+    const data = await response.json();
+    return data.options;
+  } catch (error) {
+    console.error('Error generating options:', error);
+    throw error;
+  }
 }

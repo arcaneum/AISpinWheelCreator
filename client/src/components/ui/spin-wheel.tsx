@@ -12,21 +12,35 @@ export function SpinWheel({ segments, colors }: SpinWheelProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [size, setSize] = useState(0);
+
+  useEffect(() => {
+    const updateSize = () => {
+      const containerWidth = window.innerWidth * (window.innerWidth < 768 ? 0.9 : 0.8);
+      setSize(Math.min(containerWidth, 500));
+    };
+
+    // Initial size
+    updateSize();
+
+    // Update size on window resize
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || size === 0) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     // Set canvas size
-    const size = Math.min(window.innerWidth * 0.8, 500);
     canvas.width = size;
     canvas.height = size;
 
     drawWheel(ctx, segments, colors, rotation);
-  }, [segments, colors, rotation]);
+  }, [segments, colors, rotation, size]);
 
   const spin = async () => {
     if (isSpinning) return;
@@ -75,6 +89,7 @@ export function SpinWheel({ segments, colors }: SpinWheelProps) {
         <canvas
           ref={canvasRef}
           className="max-w-full"
+          style={{ width: size, height: size }}
         />
       </div>
       <Button 
