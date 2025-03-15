@@ -48,10 +48,6 @@ export function drawWheel(
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Add text shadow for better readability
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-    ctx.shadowBlur = 4;
-
     // Calculate maximum text width based on segment size
     const segmentHeight = 2 * radius * Math.sin(angleStep / 2);
     const words = segment.split(' ');
@@ -62,16 +58,20 @@ export function drawWheel(
       32, // Maximum font size
       Math.max(
         14, // Minimum font size
-        Math.floor(segmentHeight / (words.length * 1.2)) // Scale based on number of words
+        Math.floor(400 / Math.max(totalLength, 10)) // Scale based on text length
       )
     );
 
-    // Adjust for total text length
-    if (totalLength > 10) {
-      fontSize = Math.min(fontSize, Math.floor(400 / totalLength));
+    // Further adjust based on number of words
+    if (words.length > 1) {
+      fontSize = Math.min(fontSize, Math.floor(segmentHeight / (words.length * 1.2)));
     }
 
     ctx.font = `bold ${fontSize}px sans-serif`;
+
+    // Add text shadow for better readability
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = 4;
 
     // Draw each word along the radius
     const lineSpacing = fontSize * 1.2;
