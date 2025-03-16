@@ -28,14 +28,14 @@ export function WheelForm({ onSubmit }: WheelFormProps) {
   const form = useForm({
     resolver: zodResolver(
       insertWheelSchema.extend({
-        segments: insertWheelSchema.shape.segments.transform((val) =>
+        segments: insertWheelSchema.shape.segments.transform((val: any) => // Add :any type annotation to val
           typeof val === "string" ? val.split(",").map((s) => s.trim()) : val
         ),
       })
     ),
     defaultValues: {
       name: "",
-      segments: [],
+      segments: "", // Initialize segments as empty string
       colors: [],
     },
   });

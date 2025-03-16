@@ -58,7 +58,7 @@ export default function Home() {
         <div className="flex justify-between items-center">
           <div className="space-y-2">
             <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              Spin Wheel Creator
+              AI Spin Wheel Creator
             </h1>
             <p className="text-muted-foreground">
               Create, customize, and spin your decision wheels

@@ -53,19 +53,18 @@ export function drawWheel(
     const words = segment.split(' ');
     const totalLength = segment.length;
 
-    // Dynamic font size calculation based on segment size and text length
+    // Dynamic font size calculation - more responsive
     let fontSize = Math.min(
-      32, // Maximum font size
+      24, // Further reduced max font size for better mobile fit
       Math.max(
-        14, // Minimum font size
-        Math.floor(segmentHeight / (words.length * 1.5)) // Scale based on number of words with more spacing
+        10, // Further reduced min font size
+        Math.floor(segmentHeight / (words.length * 1.8)) // Increased spacing factor for smaller text
       )
     );
-
-    // Further adjust for total text length
-    if (totalLength > 10) {
-      fontSize = Math.min(fontSize, Math.floor(300 / totalLength));
+    if (totalLength > 8) { // Reduced length threshold for more aggressive reduction
+      fontSize = Math.min(fontSize, Math.floor(240 / totalLength)); // More aggressive length factor
     }
+
 
     ctx.font = `bold ${fontSize}px sans-serif`;
 
@@ -73,11 +72,13 @@ export function drawWheel(
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     ctx.shadowBlur = 4;
 
-    // Draw each word along the radius with increased spacing
-    const lineSpacing = fontSize * 1.5; // Increased line spacing
+    const lineSpacing = fontSize * 1.2; // Adjusted line spacing
+    let yOffset = -((words.length - 1) * lineSpacing) / 2; // Center text block vertically
+
     words.forEach((word, index) => {
-      const distanceFromCenter = radius * 0.35 + (index * lineSpacing); // Moved text further from center
-      ctx.fillText(word, distanceFromCenter, 0);
+      const distanceFromCenter = radius * 0.5; // Increased distanceFromCenter
+      ctx.fillText(word, distanceFromCenter, yOffset);
+      yOffset += lineSpacing;
     });
 
     ctx.restore();
@@ -120,9 +121,9 @@ export function getWinningSegment(
 ): string {
   const segmentAngle = (2 * Math.PI) / segments.length;
   const normalizedRotation = (rotation % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-  // Adjust index calculation for right-side pointer
-  const index = Math.floor(segments.length - ((normalizedRotation + Math.PI/2) / segmentAngle));
-  return segments[index % segments.length];
+  // Corrected index calculation - reversed rotation
+  const index = Math.floor((2*Math.PI - normalizedRotation) / segmentAngle) % segments.length;
+  return segments[index];
 }
 
 // Create audio context and spinning sound
