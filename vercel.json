@@ -1,10 +1,24 @@
 {
   "version": 2,
   "framework": "vite",
-  "routes": [
-    { "src": "/(.*)", "dest": "/index.html" }
+  "builds": [
+    {
+      "src": "client/dist/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "server/index.ts",
+      "use": "@vercel/node"
+    }
   ],
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+  "routes": [
+    {
+      "src": "/(|index\\.html|.*\\.(js|css|svg|png|jpg|jpeg|gif|webp))$",
+      "dest": "client/dist/$1"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "server/index.ts"
+    }
   ]
 }
