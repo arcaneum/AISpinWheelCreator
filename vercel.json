@@ -3,22 +3,22 @@
   "framework": "vite",
   "builds": [
     {
-      "src": "server/index.ts",
-      "use": "@vercel/node"
-    },
-    {
       "src": "client/dist/**",
       "use": "@vercel/static"
+    },
+    {
+      "src": "server/index.ts",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "server/index.ts"
-    },
-    {
       "src": "/(|index\\.html|.*\\.(js|css|svg|png|jpg|jpeg|gif|webp))$",
       "dest": "client/dist/$1"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "server/index.ts"
     }
   ]
 }
