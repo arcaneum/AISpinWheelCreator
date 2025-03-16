@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "framework": "vite",
   "builds": [
     {
       "src": "server/index.ts",
@@ -16,7 +17,7 @@
       "dest": "server/index.ts"
     },
     {
-      "src": "/(.*)",
+      "src": "/(|index\\.html|.*\\.(js|css|svg|png|jpg|jpeg|gif|webp))$",
       "dest": "client/dist/$1"
     }
   ]
